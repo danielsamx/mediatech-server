@@ -38,8 +38,15 @@ Ejecuta el proyecto en modo desarrollador con:
 ```bash
 npm run dev
 ```
+### 4. Crear BD:
 
-### 4. Variable de entorno:
+Abrir sqlserver y ejecutar el script:
+
+```bash
+mediatech.sql
+```
+
+### 5. Variable de entorno:
 
 Crear un archivo .env y definir las siguientes variables de entorno:
 
@@ -51,7 +58,7 @@ DB_USER=TU_USUARIO
 DB_PASSWORD=TU_CONTRASEÑA
 ```
 
-### 5. Acceder a la aplicación:
+### 6. Acceder a la aplicación:
 
 Una vez que el servidor esté corriendo, podrás acceder a la documentación en:
 
