@@ -3,7 +3,7 @@
 
 
 
-# 🧩 App React
+# 🧩 App Express
 
 Sistema de gestión de mediaciones elaborada en Express y TypeScript
 
@@ -40,7 +40,7 @@ npm run dev
 ```
 ### 4. Crear BD:
 
-Abrir sqlserver y ejecutar el script:
+Abrir sqlserver(ssms) y ejecutar el script:
 
 ```bash
 mediatech.sql
