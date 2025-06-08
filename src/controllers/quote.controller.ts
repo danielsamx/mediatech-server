@@ -32,6 +32,6 @@ export class QuoteController {
     const result = await QuoteService.delete(id);
     if (result.startsWith("Error"))
       return res.status(500).json({ message: result });
-    return res.status(204).send();
+    return res.json({ message: result });
   }
 }

@@ -14,8 +14,9 @@ export class CaseService {
           second_involved, 
           status,
           subject,
-          subsubject,
-          description, 
+          description,
+          register_date,
+          register_time,
           i1.name + ' ' + i1.lastname AS name_first_involved, 
           i2.name + ' ' + i2.lastname AS name_second_involved
         FROM [Case]
@@ -25,7 +26,40 @@ export class CaseService {
 
       return result.recordset;
     } catch (error) {
-      return "Error fetching quotes";
+      return "Error fetching cases";
+    }
+  }
+
+  static async getById(id: string): Promise<Case | string> {
+    try {
+      const pool = await connectDB();
+      if (typeof pool === "string") return pool;
+
+      const result = await pool.request().input("id", id).query(`
+        SELECT 
+          c.id, 
+          c.first_involved, 
+          c.second_involved, 
+          i1.name AS first_name,
+          i1.lastname AS first_lastname,
+          i1.cellphone AS first_cellphone,
+          i1.email AS first_email,
+          i2.name AS second_name,
+          i2.lastname AS second_lastname,
+          i2.cellphone AS second_cellphone,
+          i2.email AS second_email,
+          c.status,
+          c.subject,
+          c.description
+        FROM [Case] c
+        LEFT JOIN Involved i1 ON c.first_involved = i1.dni 
+        LEFT JOIN Involved i2 ON c.second_involved = i2.dni
+        WHERE c.id = @id;
+      `);
+
+      return result.recordset[0];
+    } catch (error) {
+      return "Error fetching case";
     }
   }
 
@@ -36,6 +70,7 @@ export class CaseService {
 
       await pool
         .request()
+        .input("id", caseData.id)
         // Inputs de primer involucrado
         .input("first_involved", caseData.firstInvolved)
         .input("first_name", caseData.firstName)
@@ -51,7 +86,6 @@ export class CaseService {
         // Inputs del caso
         .input("status", caseData.status)
         .input("subject", caseData.subject)
-        .input("subsubject", caseData.subSubject)
         .input("description", caseData.description).query(`
           -- Primer involucrado
           IF NOT EXISTS (SELECT 1 FROM Involved WHERE dni = @first_involved)
@@ -80,8 +114,9 @@ export class CaseService {
           END
 
           -- Inserta el caso
-          INSERT INTO [Case](first_involved, second_involved, status, subject, subsubject, description)
-          VALUES (@first_involved, @second_involved, @status, @subject, @subsubject, @description);
+          INSERT INTO [Case](first_involved, second_involved, status, subject, description)
+          VALUES (@first_involved, @second_involved, @status, @subject, @description);
+          UPDATE Quote SET [status] = 'inactivo' WHERE id = @id;
         `);
 
       return "Caso guardado con éxito";
@@ -90,27 +125,35 @@ export class CaseService {
     }
   }
 
-  static async update(
-    id: string,
-    caseData: Partial<Omit<Case, "email" | "dni">>
-  ): Promise<string> {
+  static async update(id: string, data: any): Promise<string> {
     try {
+      const {
+        first_involved,
+        second_involved,
+        first_cellphone,
+        first_email,
+        second_cellphone,
+        second_email,
+        status,
+        subject,
+        description,
+      } = data;
+
       const pool = await connectDB();
       if (typeof pool === "string") return pool;
 
       await pool
         .request()
         .input("id", id)
-        .input("first_involved", caseData.firstInvolved)
-        .input("second_involved", caseData.secondInvolved)
-        .input("first_cellphone", caseData.firstCellphone)
-        .input("first_email", caseData.firstEmail)
-        .input("second_cellphone", caseData.secondCellphone)
-        .input("second_email", caseData.secondEmail)
-        .input("status", caseData.status)
-        .input("subject", caseData.subject)
-        .input("subsubject", caseData.subSubject)
-        .input("description", caseData.description).query(`
+        .input("first_involved", first_involved)
+        .input("second_involved", second_involved)
+        .input("first_cellphone", first_cellphone)
+        .input("first_email", first_email)
+        .input("second_cellphone", second_cellphone)
+        .input("second_email", second_email)
+        .input("status", status)
+        .input("subject", subject)
+        .input("description", description).query(`
         UPDATE Involved 
         SET cellphone = @first_cellphone, email = @first_email 
         WHERE dni = @first_involved;
@@ -123,7 +166,6 @@ export class CaseService {
         SET 
           [status] = @status,
           subject = @subject,
-          subsubject = @subsubject,
           [description] = @description
         WHERE id = @id;
       `);

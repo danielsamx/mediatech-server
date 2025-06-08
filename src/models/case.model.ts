@@ -1,4 +1,5 @@
 export interface Case {
+  id: number;
   firstInvolved: string;
   secondInvolved: string;
   firstName: string;
@@ -11,6 +12,5 @@ export interface Case {
   secondEmail: string;
   status: string;
   subject: string;
-  subSubject: string;
   description: string;
 }

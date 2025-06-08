@@ -22,6 +22,15 @@ export class UserService {
       const pool = await connectDB();
       if (typeof pool === "string") return pool;
 
+      const existingUser = await pool
+        .request()
+        .input("email", user.email)
+        .query(`SELECT 1 FROM [User] WHERE email = @email`);
+
+      if (existingUser.recordset.length > 0) {
+        return "El usuario ya existe";
+      }
+
       const hashedPassword = await bcrypt.hash(user.password, 10);
 
       await pool
@@ -30,9 +39,9 @@ export class UserService {
         .input("name", user.name)
         .input("lastname", user.lastName)
         .input("password", hashedPassword).query(`
-          INSERT INTO [User] (email, [name], lastname, [password])
-          VALUES (@email, @name, @lastname, @password)
-        `);
+        INSERT INTO [User] (email, [name], lastname, [password])
+        VALUES (@email, @name, @lastname, @password)
+      `);
 
       return "Usuario creado exitosamente";
     } catch (error) {
@@ -75,13 +84,11 @@ export class UserService {
       const pool = await connectDB();
       if (typeof pool === "string") return pool;
 
-      // Si hay password, hashearla antes de actualizar
       let hashedPassword: string | undefined;
       if (updateData.password) {
         hashedPassword = await bcrypt.hash(updateData.password, 10);
       }
 
-      // Construir query dinámico y parámetros según campos recibidos (excepto dni)
       const fieldsToUpdate: string[] = [];
       const request = pool.request().input("email", email);
 

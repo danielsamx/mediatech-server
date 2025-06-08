@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors, { CorsOptions } from "cors";
 import userRoutes from "./routes/user.route";
 import quoteRoutes from "./routes/quote.route";
+import caseRoutes from "./routes/case.route";
 import { setupSwagger } from "./docs/swagger";
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.json());
 setupSwagger(app);
 app.use("/usuario", userRoutes);
 app.use("/cita", quoteRoutes);
+app.use("/caso", caseRoutes);
 
 const PORT = process.env.PORT || 3000;
 

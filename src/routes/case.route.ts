@@ -30,6 +30,35 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @swagger
+ * /caso/{id}:
+ *   get:
+ *     summary: Obtener un caso por ID
+ *     tags: [Caso]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del caso
+ *     responses:
+ *       200:
+ *         description: Caso encontrado
+ *       404:
+ *         description: Caso no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await CaseController.getById(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
  * /caso:
  *   post:
  *     summary: Crear un nuevo caso

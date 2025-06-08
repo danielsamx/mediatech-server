@@ -53,6 +53,7 @@ const options = {
         Caso: {
           type: "object",
           required: [
+            "id",
             "firstInvolved",
             "secondInvolved",
             "firstName",
@@ -65,10 +66,10 @@ const options = {
             "secondEmail",
             "status",
             "subject",
-            "subSubject",
             "description",
           ],
           properties: {
+            id: { type: "number" },
             firstInvolved: { type: "string" },
             secondInvolved: { type: "string" },
             firstName: { type: "string" },
@@ -81,7 +82,6 @@ const options = {
             secondEmail: { type: "string" },
             status: { type: "string" },
             subject: { type: "string" },
-            subSubject: { type: "string" },
             description: { type: "string" },
           },
         },

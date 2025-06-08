@@ -19,7 +19,8 @@ export class QuoteService {
          i2.email AS email_second_involved 
        FROM Quote 
        LEFT JOIN Involved i1 ON first_involved = i1.dni 
-       LEFT JOIN Involved i2 ON second_involved = i2.dni`
+       LEFT JOIN Involved i2 ON second_involved = i2.dni
+       WHERE [status] = 'activo'`
       );
       return result.recordset;
     } catch (error) {
